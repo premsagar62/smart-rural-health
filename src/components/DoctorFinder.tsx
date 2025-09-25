@@ -16,6 +16,7 @@ import {
   Eye,
   User
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Doctor {
   id: string;
@@ -37,6 +38,7 @@ interface DoctorFinderProps {
 }
 
 const DoctorFinder = ({ onBack }: DoctorFinderProps) => {
+  const { toast } = useToast();
   const [location, setLocation] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("all");
 
@@ -107,9 +109,67 @@ const DoctorFinder = ({ onBack }: DoctorFinderProps) => {
     return Stethoscope;
   };
 
-  const openMaps = (address: string) => {
+  const openMaps = (address: string, doctorName: string) => {
+    console.log('Opening directions for:', address);
     const encodedAddress = encodeURIComponent(address);
-    window.open(`https://www.google.com/maps/search/${encodedAddress}`, '_blank');
+    const encodedDoctorName = encodeURIComponent(doctorName);
+    
+    // Try multiple map services
+    const mapServices = [
+      {
+        name: 'Google Maps',
+        url: `https://www.google.com/maps/search/${encodedDoctorName}+${encodedAddress}`
+      },
+      {
+        name: 'Apple Maps', 
+        url: `https://maps.apple.com/maps?q=${encodedDoctorName}+${encodedAddress}`
+      },
+      {
+        name: 'OpenStreetMap',
+        url: `https://www.openstreetmap.org/search?query=${encodedAddress}`
+      }
+    ];
+    
+    // Try to open Google Maps first
+    try {
+      const newWindow = window.open(mapServices[0].url, '_blank', 'noopener,noreferrer');
+      if (newWindow) {
+        console.log('Successfully opened Google Maps');
+        toast({
+          title: "Directions Opened",
+          description: `Opening ${mapServices[0].name} for ${doctorName}`,
+        });
+      } else {
+        // If blocked, show fallback options
+        console.log('Pop-up blocked, showing alternatives');
+        showMapOptions(mapServices, doctorName);
+      }
+    } catch (error) {
+      console.error('Error opening maps:', error);
+      showMapOptions(mapServices, doctorName);
+    }
+  };
+
+  const showMapOptions = (mapServices: any[], doctorName: string) => {
+    toast({
+      title: "Choose Map Service",
+      description: "Pop-up blocked. Please allow pop-ups or copy the address to open in your preferred map app.",
+      action: (
+        <div className="flex flex-col gap-1">
+          {mapServices.map((service, index) => (
+            <a
+              key={index}
+              href={service.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs underline hover:no-underline"
+            >
+              Open in {service.name}
+            </a>
+          ))}
+        </div>
+      ),
+    });
   };
 
   const callDoctor = (phone: string) => {
@@ -229,11 +289,32 @@ const DoctorFinder = ({ onBack }: DoctorFinderProps) => {
                       </Button>
                       <Button 
                         variant="outline"
-                        onClick={() => openMaps(doctor.address)}
+                        onClick={() => openMaps(doctor.address, doctor.name)}
                         className="border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white"
                       >
                         <Navigation className="w-4 h-4 mr-2" />
                         Get Directions
+                      </Button>
+                      
+                      {/* Fallback: Copy address button */}
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(doctor.address).then(() => {
+                            toast({
+                              title: "Address Copied!",
+                              description: "Address copied to clipboard. Paste it in your map app.",
+                            });
+                          }).catch(() => {
+                            toast({
+                              title: "Address",
+                              description: doctor.address,
+                            });
+                          });
+                        }}
+                        className="border-medical-success text-medical-success hover:bg-medical-success hover:text-white text-xs"
+                      >
+                        📋 Copy Address
                       </Button>
                     </div>
                   </div>
