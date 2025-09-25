@@ -151,28 +151,28 @@ const AnalysisResults = ({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {analysis.recommendation === 'doctor' || analysis.severity === 'Serious' ? (
-              <Card className="p-4 border-medical-warning bg-medical-warning/5 hover:shadow-card-hover transition-shadow cursor-pointer">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-medical-warning/20 rounded-lg">
-                    <MapPin className="w-5 h-5 text-medical-warning" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold mb-1">Find Nearby Doctors</h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Connect with qualified doctors in your area for professional consultation
-                    </p>
-                    <Button 
-                      onClick={onFindDoctors}
-                      className="w-full bg-medical-warning hover:bg-medical-warning/90"
-                    >
-                      Find Doctors
-                    </Button>
-                  </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* ALWAYS show Find Doctors option */}
+            <Card className="p-4 border-medical-primary bg-medical-primary/5 hover:shadow-card-hover transition-shadow cursor-pointer">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-medical-primary/20 rounded-lg">
+                  <MapPin className="w-5 h-5 text-medical-primary" />
                 </div>
-              </Card>
-            ) : null}
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1 text-lg">🏥 Find Nearby Doctors</h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Connect with qualified doctors in your area with contact details and directions
+                  </p>
+                  <Button 
+                    onClick={onFindDoctors}
+                    className="w-full bg-medical-primary hover:shadow-medical text-white font-semibold"
+                    size="lg"
+                  >
+                    Find Doctors Near Me
+                  </Button>
+                </div>
+              </div>
+            </Card>
             
             <Card className="p-4 border-medical-success bg-medical-success/5 hover:shadow-card-hover transition-shadow cursor-pointer">
               <div className="flex items-start gap-3">
@@ -180,16 +180,16 @@ const AnalysisResults = ({
                   <Pill className="w-5 h-5 text-medical-success" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold mb-1">Medicine Suggestions</h3>
+                  <h3 className="font-semibold mb-1 text-lg">💊 Medicine Suggestions</h3>
                   <p className="text-sm text-muted-foreground mb-3">
                     Get recommendations for over-the-counter medicines and home remedies
                   </p>
                   <Button 
                     onClick={onMedicineSuggestions}
-                    variant="outline"
-                    className="w-full border-medical-success text-medical-success hover:bg-medical-success hover:text-white"
+                    className="w-full bg-medical-success hover:shadow-medical text-white font-semibold"
+                    size="lg"
                   >
-                    View Medicines
+                    View Medicine Options
                   </Button>
                 </div>
               </div>
